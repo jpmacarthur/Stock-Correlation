@@ -22,6 +22,11 @@ namespace Stock_Correlation
         public MainWindow()
         {
             InitializeComponent();
+            Collector d = new Collector();
+            Dictionary<string, string> test = new Dictionary<string, string>();
+            test= d.main();
+            sqlUpload up = new sqlUpload();
+            up.upload(test);
         }
     }
 }
