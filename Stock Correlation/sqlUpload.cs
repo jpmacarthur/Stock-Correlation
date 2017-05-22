@@ -36,7 +36,7 @@ namespace Stock_Correlation
                 if (sb.Length < 950)
                 {
                     sb.Append("(\"" + id.Key + "\"");
-                    if (id.Value == null) sb.Append("null");
+                    if (id.Value == null) sb.Append(", null");
                     else sb.Append(", " + id.Value);
                     sb.Append(", CURDATE(), CURTIME()), ");
                     ending = false;
@@ -48,13 +48,13 @@ namespace Stock_Correlation
                     commands.Add(sb.ToString());
                     sb = new StringBuilder("INSERT INTO nasdaq(Symbol,Price, Date, Time) values ");
                     sb.Append("(\"" + id.Key + "\"");
-                    if (id.Value == null) sb.Append("null");
+                    if (id.Value == null) sb.Append(", null");
                     else sb.Append(", " + id.Value);
                     sb.Append(", CURDATE(), CURTIME()), ");
                     ending = true;
                 }
              }
-            if (ending = true)
+            if (ending == true)
             {
                 sb.Length = sb.Length - 2;
                 sb.Append(";");

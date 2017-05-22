@@ -24,5 +24,20 @@ namespace Stock_Correlation
             }
             return paired;
         }
+        public Dictionary<string, string> parse(string json)
+        {
+            Dictionary<string, string> paired = new Dictionary<string, string>();
+
+            string temp;
+            int start = json.IndexOf("\"quote\":");
+            temp = json.Substring(start + 8);
+            temp = temp.TrimEnd('}');
+            temp = temp + "}";
+            jsonStock stk = JsonConvert.DeserializeObject<jsonStock>(temp);
+
+            paired.Add(stk.Symbol, stk.Ask);
+
+            return paired;
+        }
     }
 }

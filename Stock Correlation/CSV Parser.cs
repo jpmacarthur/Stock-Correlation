@@ -31,6 +31,7 @@ namespace Stock_Correlation
             var records = engine.ReadString(test.ToString());
             foreach (var record in records)
             {
+                file.WriteLine(record.Symbol);
                 finalResult.Add(record.Symbol);
             }
             return finalResult;

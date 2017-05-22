@@ -3,11 +3,31 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
         xmlns:local="clr-namespace:Stock_Correlation"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <StackPanel HorizontalAlignment="Left" Height="302" Margin="10,10,0,0" VerticalAlignment="Top" Width="232"/>
+        
+        <StackPanel Orientation="Horizontal" Width="400" Margin="59,31,59.667,225.667">
+            <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
+            <TextBox Name="Symb" Text="{Binding Symbol, Mode=TwoWay}" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60"/>
+            <TextBlock Text="Price: " VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
+            <TextBlock Name ="typedPrice" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,0,10,0" Width="49"></TextBlock>
+            <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
+            <TextBox Name="Symb2" Text="{Binding Symbol, Mode=TwoWay}" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60"/>
+            <TextBlock Text="Price: " VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
+            <TextBlock Name ="typedPrice2" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,0,10,0" Width="49"></TextBlock>
+        </StackPanel>
+        <StackPanel Margin="162,100,73.667,193.667" VerticalAlignment="Center" Orientation="Horizontal">
+            <TextBlock Text="Correlation: " VerticalAlignment="Center" Margin="0,0,5,0"></TextBlock>
+            <TextBlock Name="Correl" VerticalAlignment="Center" Width="57" Text="{Binding RVal}"></TextBlock>
+            <toolkit:AutoCompleteBox Name="actest" ItemsSource="{Binding list}" SelectedItem="{Binding Symbol, Mode=TwoWay}"></toolkit:AutoCompleteBox>
+        </StackPanel>
+
+        <TextBox Margin="118,0,116,68" Name="m_txtSearchContent" Height="65" VerticalAlignment="Bottom" />
+            <TextBlock HorizontalAlignment="Left" Margin="118,0,0,139" Width="107" Text="Search content" FontSize="14" Height="20" VerticalAlignment="Bottom" />
+        <Button x:Name="button" Content="Calculate" HorizontalAlignment="Left" Height="27" Margin="65,100,0,0" VerticalAlignment="Top" Width="82" Click="button_Click"/>
 
     </Grid>
 </Window>
