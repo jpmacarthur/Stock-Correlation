@@ -26,7 +26,7 @@ namespace Tester
             List<string> jsonList = new List<string>();
             Dictionary<string, string> paired = new Dictionary<string, string>();
             CSV_Parser par = new CSV_Parser();
-            stocks = par.stockParse();
+            stocks = par.getSymbols();
             foreach(string single in stocks)
             {
                 if ((finalUrl.Length + (single.Length+11) + urlEnd.Length) < 2000)

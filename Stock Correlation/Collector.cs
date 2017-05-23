@@ -13,7 +13,7 @@ namespace Stock_Correlation
             downloadJson dl = new downloadJson();
             CSV_Parser par = new CSV_Parser();
             parseJson jsonP = new parseJson();
-            List<string> jsonDL = dl.download(par.stockParse());
+            List<string> jsonDL = dl.download(par.getSymbols());
 
             Dictionary<string, string> paired = new Dictionary<string, string>();
 

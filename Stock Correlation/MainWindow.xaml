@@ -6,28 +6,45 @@
         xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
         xmlns:local="clr-namespace:Stock_Correlation"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Stock Correlation Calculator" Height="350" Width="525">
     <Grid>
-        
-        <StackPanel Orientation="Horizontal" Width="400" Margin="59,31,59.667,225.667">
+
+        <StackPanel Orientation="Horizontal" Margin="10,31,10.667,225.667">
             <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
-            <TextBox Name="Symb" Text="{Binding Symbol, Mode=TwoWay}" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60"/>
+            <toolkit:AutoCompleteBox Name="sto1" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="18" FilterMode="Contains" Width="132" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,13">
+                <toolkit:AutoCompleteBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding Path=symbol}" Width="100"></Label>
+                            <Label Content="{Binding Path=name}" FontStyle="Italic" Foreground="DarkGray"></Label>
+                        </StackPanel>
+                    </DataTemplate>
+                </toolkit:AutoCompleteBox.ItemTemplate>
+
+
+            </toolkit:AutoCompleteBox>
             <TextBlock Text="Price: " VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
-            <TextBlock Name ="typedPrice" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,0,10,0" Width="49"></TextBlock>
+            <TextBlock Name ="typedPrice" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,24,10,24" Width="37"></TextBlock>
             <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
-            <TextBox Name="Symb2" Text="{Binding Symbol, Mode=TwoWay}" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" Width="60"/>
+            <toolkit:AutoCompleteBox Name="sto2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="18" FilterMode="Contains" Width="132" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,13">
+                <toolkit:AutoCompleteBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding Path=symbol}" Width="100"></Label>
+                            <Label Content="{Binding Path=name}" FontStyle="Italic" Foreground="DarkGray"></Label>
+                        </StackPanel>
+                    </DataTemplate>
+                </toolkit:AutoCompleteBox.ItemTemplate>
+            </toolkit:AutoCompleteBox>
             <TextBlock Text="Price: " VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
             <TextBlock Name ="typedPrice2" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,0,10,0" Width="49"></TextBlock>
         </StackPanel>
-        <StackPanel Margin="162,100,73.667,193.667" VerticalAlignment="Center" Orientation="Horizontal">
+        <StackPanel Margin="58,100,73.667,193.667" VerticalAlignment="Center" Orientation="Horizontal">
+            <Button x:Name="button" Content="Calculate" HorizontalAlignment="Left" Margin="0,0,10,0" Height="27" VerticalAlignment="Top" Width="82" Click="button_Click"/>
             <TextBlock Text="Correlation: " VerticalAlignment="Center" Margin="0,0,5,0"></TextBlock>
             <TextBlock Name="Correl" VerticalAlignment="Center" Width="57" Text="{Binding RVal}"></TextBlock>
-            <toolkit:AutoCompleteBox Name="actest" ItemsSource="{Binding list}" SelectedItem="{Binding Symbol, Mode=TwoWay}"></toolkit:AutoCompleteBox>
         </StackPanel>
-
-        <TextBox Margin="118,0,116,68" Name="m_txtSearchContent" Height="65" VerticalAlignment="Bottom" />
-            <TextBlock HorizontalAlignment="Left" Margin="118,0,0,139" Width="107" Text="Search content" FontSize="14" Height="20" VerticalAlignment="Bottom" />
-        <Button x:Name="button" Content="Calculate" HorizontalAlignment="Left" Height="27" Margin="65,100,0,0" VerticalAlignment="Top" Width="82" Click="button_Click"/>
+        
 
     </Grid>
 </Window>
