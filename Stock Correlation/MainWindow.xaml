@@ -7,11 +7,12 @@
         xmlns:local="clr-namespace:Stock_Correlation"
         mc:Ignorable="d"
         Title="Stock Correlation Calculator" Height="350" Width="525">
+
     <Grid>
 
         <StackPanel Orientation="Horizontal" Margin="10,31,10.667,225.667">
             <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
-            <toolkit:AutoCompleteBox Name="sto1" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="18" FilterMode="Contains" Width="132" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,13">
+            <toolkit:AutoCompleteBox Name="sto1" ItemFilter="{Binding PersonFilter}" MinimumPrefixLength="2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="16" FilterMode="Contains" Width="117" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,17" Panel.ZIndex="3" Height="30">
                 <toolkit:AutoCompleteBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -24,9 +25,9 @@
 
             </toolkit:AutoCompleteBox>
             <TextBlock Text="Price: " VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
-            <TextBlock Name ="typedPrice" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,24,10,24" Width="37"></TextBlock>
+            <TextBlock Name ="typedPrice" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,17,10,17" Width="37" Height="30"></TextBlock>
             <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
-            <toolkit:AutoCompleteBox Name="sto2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="18" FilterMode="Contains" Width="132" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,13">
+            <toolkit:AutoCompleteBox Name="sto2" MinimumPrefixLength="2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="16" FilterMode="Contains" Width="118" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,17" Height="30">
                 <toolkit:AutoCompleteBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -37,14 +38,18 @@
                 </toolkit:AutoCompleteBox.ItemTemplate>
             </toolkit:AutoCompleteBox>
             <TextBlock Text="Price: " VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
-            <TextBlock Name ="typedPrice2" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,0,10,0" Width="49"></TextBlock>
+            <TextBlock Name ="typedPrice2" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,17,10,17" Width="49" Height="30"></TextBlock>
         </StackPanel>
-        <StackPanel Margin="58,100,73.667,193.667" VerticalAlignment="Center" Orientation="Horizontal">
-            <Button x:Name="button" Content="Calculate" HorizontalAlignment="Left" Margin="0,0,10,0" Height="27" VerticalAlignment="Top" Width="82" Click="button_Click"/>
-            <TextBlock Text="Correlation: " VerticalAlignment="Center" Margin="0,0,5,0"></TextBlock>
-            <TextBlock Name="Correl" VerticalAlignment="Center" Width="57" Text="{Binding RVal}"></TextBlock>
+        <StackPanel Margin="58,100,73.667,179.667" VerticalAlignment="Center" Orientation="Horizontal" Height="41">
+            <Button x:Name="button" HorizontalAlignment="Left" BorderThickness="0" Margin="0,0,10,0" Height="18" VerticalAlignment="Center" Width="52" Click="button_Click">
+                <StackPanel>
+                <Image Source="bigtest.jpg" Stretch="UniformToFill" Height="16" />
+                </StackPanel>
+            </Button>
+            <TextBlock Text="Correlation: " VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <TextBlock x:Name="Correl" VerticalAlignment="Center" Width="57" Text="{Binding RVal}"/>
         </StackPanel>
-        
+
 
     </Grid>
 </Window>

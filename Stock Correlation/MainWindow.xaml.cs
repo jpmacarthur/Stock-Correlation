@@ -43,8 +43,17 @@ namespace Stock_Correlation
             Dictionary<string, string> names = parCSV.getSymbolName();
             foreach(KeyValuePair<string, string> pair in names)
             {
-                stockname temp = new stockname(pair.Key, pair.Value);
-                l1.Add(temp);
+                if (pair.Value.Contains(@"&#39;"))
+                {
+                    string temp2 = pair.Value.Replace(@"&#39;", "'");
+                    stockname temp3 = new stockname(pair.Key, temp2);
+                    l1.Add(temp3);
+                }
+                else
+                {
+                    stockname temp = new stockname(pair.Key, pair.Value);
+                    l1.Add(temp);
+                }
             }
             list = new ViewModel(l1);
             list2 = new ViewModel(l1);
@@ -67,29 +76,33 @@ namespace Stock_Correlation
         private void button_Click(object sender, RoutedEventArgs e)
         {
             sqlRetrieve getter = new sqlRetrieve();
+            try
+            {
             string selected1 = list.SelectedName.symbol;
             string selected2 = list2.SelectedName.symbol;
             List<double> jsf = getter.retrievePrice(selected1);
             List<double> jsf2 = getter.retrievePrice(selected2);
-            double average = jsf.Average();
-            tester.Price = average.ToString("0.##");
+           
+                double average = jsf.Average();
+                tester.Price = average.ToString("0.##");
 
-            double average2 = jsf2.Average();
+                double average2 = jsf2.Average();
 
-            tester2.Price = average2.ToString("0.##");
-            corre.RVal = Math.Round(calc.ComputeCoeff(jsf.ToArray(), jsf2.ToArray()),3);
+                tester2.Price = average2.ToString("0.##");
+                if(jsf2.Count - jsf.Count == 1)
+                {
+                    jsf2.RemoveAt(0);
+                }
+                if (jsf.Count - jsf2.Count == 1)
+                {
+                    jsf2.RemoveAt(0);
+                }
+                corre.RVal = Math.Round(calc.ComputeCoeff(jsf.ToArray(), jsf2.ToArray()), 3);
+            }
+            catch (NullReferenceException) { MessageBox.Show("Please enter a stock symbol into both entries"); }
         }
     }
-    public interface ImyViewModel
-    {
-        IEnumerable<string> Names { get; }
-        string SelectedName { get; set; }
-    }
-    public interface IPeopleViewModel
-    {
-        IEnumerable<Person> People { get; }
-        Person SelectedPerson { get; set; }
-    }
+
     public class ViewModel { 
         public ObservableCollection<stockname> Names { get; set; }
         public stockname SelectedName { get; set; }
@@ -100,6 +113,15 @@ namespace Stock_Correlation
         public ViewModel()
         {
             Names = new ObservableCollection<stockname>();
+        }
+        public AutoCompleteFilterPredicate<object> PersonFilter
+        {
+            get
+            {
+                return (searchText, obj) =>
+                    (obj as stockname).symbol.ToLower().Contains(searchText.ToLower())
+                    || (obj as stockname).name.ToLower().Contains(searchText.ToLower());
+            }
         }
     }
     public class searchBarinfo
