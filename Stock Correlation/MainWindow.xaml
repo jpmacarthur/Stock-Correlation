@@ -4,12 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
+        xmlns:xcee="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:Stock_Correlation"
+        xmlns:p="clr-namespace:Stock_Correlation.Properties"
         mc:Ignorable="d"
-        Title="Stock Correlation Calculator" Height="350" Width="525">
+        Title="Stock Correlation Calculator" Height="{Binding Source={x:Static p:Settings.Default}, Path=height, Mode=TwoWay}" Width="{Binding Source={x:Static p:Settings.Default}, Path=width, Mode=TwoWay}" Icon="stocor_dXJ_icon.ico"
+        Closing="Window_Closing"
+        MinHeight="400"
+        MinWidth="500">
+        
+    <Grid Name="totG">
 
-    <Grid>
+            <local:UserControl1 x:Name="pU2" Height="{Binding Height}" Width="{Binding Width}" Panel.ZIndex="1" Visibility="Collapsed"></local:UserControl1>
 
+
+        <DockPanel Panel.ZIndex="2">
+            <Menu Background="#FF60BB92" DockPanel.Dock="Top" Height="19" VerticalAlignment="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_New" Click="New_Click"/>
+                    <MenuItem Header="_Settings" Click="MenuItem_Click"/>
+                <Separator/>
+                <MenuItem Header="_Exit" Click="MenuItem_Click_1"/>
+                </MenuItem>
+            </Menu>
+        </DockPanel>
         <StackPanel Orientation="Horizontal" Margin="10,31,10.667,225.667">
             <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
             <toolkit:AutoCompleteBox Name="sto1" ItemFilter="{Binding PersonFilter}" MinimumPrefixLength="2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="16" FilterMode="Contains" Width="117" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,17" Panel.ZIndex="3" Height="30">
@@ -41,15 +59,27 @@
             <TextBlock Name ="typedPrice2" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,17,10,17" Width="49" Height="30"></TextBlock>
         </StackPanel>
         <StackPanel Margin="58,100,73.667,179.667" VerticalAlignment="Center" Orientation="Horizontal" Height="41">
-            <Button x:Name="button" HorizontalAlignment="Left" BorderThickness="0" Margin="0,0,10,0" Height="18" VerticalAlignment="Center" Width="52" Click="button_Click">
+            <DatePicker Name="cale" SelectedDate="{Binding SelDate}" DisplayDate="{Binding DateTime.Now}"  VerticalAlignment="Center"></DatePicker>
+            <Separator Margin="10"></Separator>
+            <Button x:Name="button" HorizontalAlignment="Left" BorderThickness="0" Height="18" VerticalAlignment="Center" Width="52" Click="button_Click">
                 <StackPanel>
-                <Image Source="bigtest.jpg" Stretch="UniformToFill" Height="16" />
+                    <Image Source="bigtest.jpg" Stretch="UniformToFill" Height="16" />
                 </StackPanel>
             </Button>
-            <TextBlock Text="Correlation: " VerticalAlignment="Center" Margin="0,0,5,0"/>
+            <Separator Margin="10"/>
+            <TextBlock Text="Correlation: " VerticalAlignment="Center"/>
             <TextBlock x:Name="Correl" VerticalAlignment="Center" Width="57" Text="{Binding RVal}"/>
+            <Button Name="cal_Test" Margin="0,10,0,8.333" Width="48" HorizontalAlignment="Center" VerticalAlignment="Center" Height="23" Content="Date" Click="cal_Test_Click_1"></Button>
+        </StackPanel>
+        <StackPanel Margin="0,133,-0.333,90.667" Orientation="Horizontal" >
+            <Button Width="35" VerticalAlignment="Center" Height="35" HorizontalAlignment="Center" Name="SETT" Click="SETT_Click">
+                <StackPanel>
+                    <Image Source="settingsicon.png"></Image>
+                </StackPanel>
+
+            </Button>
         </StackPanel>
 
-
     </Grid>
+
 </Window>

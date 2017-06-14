@@ -10,7 +10,7 @@ namespace Calculator
 {
     public class sqlRetrieve
     {
-        public List<double> retrievePrice(string stock)
+        public List<double> retrievePrice(string stock, string server, string db, string pwd, string uid)
         {
             Dictionary<string, List<double>> values = new Dictionary<string, List<double>>();
             List<double> prices = new List<double>();
@@ -18,9 +18,9 @@ namespace Calculator
             MySqlConnection conn = new MySqlConnection();
             string myConnectionString;
 
-            myConnectionString = "server=127.0.0.1;uid=pmacarthur;" +
-        "pwd=theblob;database=StockInfo;";
-            string query = "SELECT price FROM nasdaq WHERE Symbol = '" + stock + "';";
+            myConnectionString = String.Format("server={0};uid={1};" +
+        "pwd={2};database={3};", server, uid, pwd, db);
+            string query = "SELECT price FROM nasdaq WHERE Symbol = '" + stock + "' and time > '09:00:00' and time < '16:30:00';";
 
             try
             {

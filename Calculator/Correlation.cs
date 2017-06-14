@@ -25,10 +25,10 @@ namespace Calculator
 
             return value;
         }
-        public double ComputeCoeff(double[] values1, double[] values2)
+        public double ComputeCoeff(List<double> values1, List<double> values2)
         {
-            if (values1.Length != values2.Length)
-                throw new ArgumentException("values must be the same length");
+            while (values1.Count > values2.Count) { values1.RemoveAt(0); }
+            while (values2.Count > values2.Count) { values2.RemoveAt(0); }
 
             var avg1 = values1.Average();
             var avg2 = values2.Average();

@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft;
 using Newtonsoft.Json;
+using System.Windows;
 
 namespace Tester
 {
@@ -77,6 +78,12 @@ namespace Tester
                 temp.Add(temp2);
             }
             File.WriteAllLines(@"c:\users\pat\desktop\delim.txt", temp);
+
+        }
+        [TestMethod]
+        public void makeWindow()
+        {
+            Window f = new Window();
 
         }
     }

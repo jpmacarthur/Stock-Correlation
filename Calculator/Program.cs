@@ -12,9 +12,9 @@ namespace Calculator
             sqlRetrieve get = new sqlRetrieve();
             Correlation calc = new Correlation();
             Dictionary<string, List<double>> test = new Dictionary<string, List<double>>();
-            List<double> l1 = get.retrievePrice("PIH");
-            List<double> l2 = get.retrievePrice("AAPL");
-            double cor = calc.ComputeCoeff(l1.ToArray(), l2.ToArray());
+            List<double> l1 = get.retrievePrice("PIH", "127.0.0.1", "StockInfo", "theblob", "pmacarthur");
+            List<double> l2 = get.retrievePrice("AAPL", "127.0.0.1", "StockInfo", "theblob", "pmacarthur");
+            double cor = calc.ComputeCoeff(l1, l2);
             Console.WriteLine(cor);
             
         }

@@ -34,6 +34,8 @@ namespace Stock_Correlation
         searchBarinfo sear = new searchBarinfo();
         ViewModel list = new ViewModel();
         ViewModel list2 = new ViewModel();
+        caldate wpfCAL = new caldate();
+        popupDim pud = new popupDim();
         public MainWindow()
         {
             InitializeComponent();
@@ -58,19 +60,16 @@ namespace Stock_Correlation
             list = new ViewModel(l1);
             list2 = new ViewModel(l1);
             sear = new searchBarinfo(names);
-            //stock1.DataContext = list;
             Correl.DataContext = corre;
             sto1.DataContext = list;
             sto2.DataContext = list2;
             typedPrice.DataContext = tester;
-            //s1Price.DataContext = tester2;
             typedPrice2.DataContext = tester2;
-          //  actest.DataContext = list;
+            cale.DataContext = wpfCAL;
+            pU2.DataContext = pud;
+
             Collector d = new Collector();
             Dictionary<string, string> test = new Dictionary<string, string>();
-          //  test = d.main();
-          //  sqlUpload up = new sqlUpload();
-          //  up.upload(test);
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
@@ -80,8 +79,8 @@ namespace Stock_Correlation
             {
             string selected1 = list.SelectedName.symbol;
             string selected2 = list2.SelectedName.symbol;
-            List<double> jsf = getter.retrievePrice(selected1);
-            List<double> jsf2 = getter.retrievePrice(selected2);
+            List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+            List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
            
                 double average = jsf.Average();
                 tester.Price = average.ToString("0.##");
@@ -97,12 +96,80 @@ namespace Stock_Correlation
                 {
                     jsf2.RemoveAt(0);
                 }
-                corre.RVal = Math.Round(calc.ComputeCoeff(jsf.ToArray(), jsf2.ToArray()), 3);
+                corre.RVal = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
             }
             catch (NullReferenceException) { MessageBox.Show("Please enter a stock symbol into both entries"); }
         }
-    }
+        private void cal_Test_Click_1(object sender, RoutedEventArgs e)
+        {
+            DateTime? date = wpfCAL.SelDate;
+            MessageBox.Show(date.Value.ToString("yyyy-MM-dd"));
 
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Settings s = new Settings();
+            s.Show();
+        }
+
+        private void MenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void New_Click(object sender, RoutedEventArgs e)
+        {
+            MainWindow ne = new MainWindow();
+            ne.Show();
+        }
+
+        private void SETT_Click(object sender, RoutedEventArgs e)
+        {
+            pud.Height = (int)totG.ActualHeight;
+            pud.Width = (int)totG.ActualWidth;
+            pU2.Visibility = Visibility.Visible;
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            Properties.Settings.Default.Save();
+        }
+    }
+    public class popupDim : INotifyPropertyChanged
+    {
+        private int height;
+        public int Height
+        {
+            get { return height; }
+            set
+            {
+                height = value;
+                OnPropertyChanged();
+            }
+        }
+        private int width;
+        public int Width
+        {
+            get { return width; }
+            set
+            {
+                width = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string caller = "")
+        {
+            if (PropertyChanged != null)
+            {
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs(caller));
+                };
+            }
+        }
+    }
     public class ViewModel { 
         public ObservableCollection<stockname> Names { get; set; }
         public stockname SelectedName { get; set; }
@@ -138,6 +205,34 @@ namespace Stock_Correlation
         {
             list = new ObservableCollection<string>();
             list2 = new ObservableCollection<string>();
+        }
+    }
+    public class caldate : INotifyPropertyChanged
+    {
+        private DateTime selDate;
+        public DateTime SelDate
+        {
+            get { return selDate; }
+            set
+            {
+                selDate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public caldate()
+        {
+            selDate = DateTime.Now;
+        }
+        private void OnPropertyChanged([CallerMemberName] string caller = "")
+        {
+            if (PropertyChanged != null)
+            {
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs(caller));
+                };
+            }
         }
     }
     public class corrDisp : INotifyPropertyChanged
