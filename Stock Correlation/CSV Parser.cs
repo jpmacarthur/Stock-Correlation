@@ -16,8 +16,9 @@ namespace Stock_Correlation
             downloadCSV dl = new downloadCSV();
             string csvFile = dl.GetCSV(nasdaq);
             var result = Regex.Split(csvFile, "\r\n|\r\n");
+            string dtp = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
-            StreamWriter file = new StreamWriter(@"c:\users\pat\desktop\stockList.txt");
+            StreamWriter file = new StreamWriter(dtp +"\\stockList.txt");
             List<string> res2 = new List<string>();
             List<string> finalResult = new List<string>();
             StringBuilder test = new StringBuilder();
