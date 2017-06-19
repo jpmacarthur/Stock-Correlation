@@ -6,6 +6,7 @@
         xmlns:toolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"
         xmlns:xcee="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:Stock_Correlation"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
         xmlns:p="clr-namespace:Stock_Correlation.Properties"
         mc:Ignorable="d"
         Title="Stock Correlation Calculator" Height="{Binding Source={x:Static p:Settings.Default}, Path=height, Mode=TwoWay}" Width="{Binding Source={x:Static p:Settings.Default}, Path=width, Mode=TwoWay}" Icon="stocor_dXJ_icon.ico"
@@ -16,7 +17,7 @@
     <Grid Name="totG">
 
             <local:UserControl1 x:Name="pU2" Height="{Binding Height}" Width="{Binding Width}" Panel.ZIndex="1" Visibility="Collapsed"></local:UserControl1>
-
+        <Image Name="load" gif:ImageBehavior.AnimatedSource="loading-test.gif" Stretch="Fill" Height="100" Width="100" Visibility="Collapsed"></Image>
 
         <DockPanel Panel.ZIndex="2">
             <Menu Background="#FF60BB92" DockPanel.Dock="Top" Height="19" VerticalAlignment="Top">

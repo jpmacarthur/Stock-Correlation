@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Configuration;
+using System.Threading.Tasks;
 
 namespace Calculator
 {
@@ -59,10 +60,7 @@ namespace Calculator
 
             }
             return prices;
-        }
-    }
-
-
-
-
+        }}
 }
+
+
