@@ -78,60 +78,56 @@ namespace Stock_Correlation
             load.Visibility = Visibility.Visible;
             sqlRetrieve getter = new sqlRetrieve();
             string selected1 = "";
-            List<double> jsf;
-            double average = 0;
             string selected2 = "";
-            List<double> jsf2;
-            double average2 = 0;
-            double tempcor = 0;
             int m_count = 0;
+            double tempcor = 0;
             try
             {
-                Task T = new Task(() =>
-                {
-                    m_count++;
-                    selected1 = list.SelectedName.symbol;
-                    jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                    average = jsf.Average();
 
-                });
-                Task T2 = T.ContinueWith((antecedent) => {
-                    tester.Price = average.ToString("0.##");
+
+                selected1 = list.SelectedName.symbol;
+                selected2 = list2.SelectedName.symbol;
+                Task < List < double >> T_one = Task.Factory.StartNew(() => {
+                        m_count++;
+                        List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                        return jsf;
+                    });
+                Task T_one_ex = T_one.ContinueWith((antecedent) => {
+                    tester.Price = T_one.Result.Average().ToString("0.##");
                     m_count--;
                     if(m_count <= 0) { load.Visibility = Visibility.Collapsed; }
-                }
-                , TaskScheduler.FromCurrentSynchronizationContext());
+                },TaskScheduler.FromCurrentSynchronizationContext());
 
-                Task T3 = new Task(() =>
+
+                Task <List<double>> T_second = Task.Factory.StartNew(() =>
                 {
                     m_count++;
-                    selected2 = list2.SelectedName.symbol;
-                    jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                    average2 = jsf2.Average();
+                    List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                    return jsf2;
 
                 });
-                Task T4 = T.ContinueWith((antecedent) => {
-                    tester2.Price = average2.ToString("0.##");
+                Task T_second_ex = T_second.ContinueWith((antecedent) => {
+                    tester2.Price = T_second.Result.Average().ToString("0.##");
                     m_count--;
                     if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
-                }
-                , TaskScheduler.FromCurrentSynchronizationContext());
+                }, TaskScheduler.FromCurrentSynchronizationContext());
 
 
-
-                Task T5 = new Task(() => {
+                Task T5 =  new Task(() => {
                     m_count++;
-                    jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                    jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                    tempcor = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3); });
-                Task T6 = T5.ContinueWith((antecedent) => {
+                    List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                    List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                    tempcor = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
+
+                });
+                Task T5_ex = T5.ContinueWith((antecedent) =>
+                {
                     corre.RVal = tempcor;
                     m_count--;
                     if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
-                },TaskScheduler.FromCurrentSynchronizationContext());
-                T.Start();
-                T3.Start();
+                    }, TaskScheduler.FromCurrentSynchronizationContext());
                 T5.Start();
+
 
                 //string selected1 = list.SelectedName.symbol;
                 //  string selected2 = list2.SelectedName.symbol;
