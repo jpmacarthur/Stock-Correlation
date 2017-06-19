@@ -37,6 +37,13 @@ namespace Stock_Correlation
         ViewModel list2 = new ViewModel();
         caldate wpfCAL = new caldate();
         popupDim pud = new popupDim();
+        string prestringone = "";
+        int m_count = 0;
+        Task<List<double>> T_one = new Task<List<double>>(() =>
+        {
+            List<double> temp = new List<double>();
+            return temp;
+        });
         public MainWindow()
         {
             InitializeComponent();
@@ -44,7 +51,7 @@ namespace Stock_Correlation
             List<stockname> l1 = new List<stockname>();
             List<stockname> l2 = new List<stockname>();
             Dictionary<string, string> names = parCSV.getSymbolName();
-            foreach(KeyValuePair<string, string> pair in names)
+            foreach (KeyValuePair<string, string> pair in names)
             {
                 if (pair.Value.Contains(@"&#39;"))
                 {
@@ -75,75 +82,76 @@ namespace Stock_Correlation
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            load.Visibility = Visibility.Visible;
-            sqlRetrieve getter = new sqlRetrieve();
-            string selected1 = "";
-            string selected2 = "";
-            int m_count = 0;
-            double tempcor = 0;
-            try
+            // load.Visibility = Visibility.Visible;
+             sqlRetrieve getter = new sqlRetrieve();
+             string selected1 = "";
+             string selected2 = "";
+             int m_count = 0;
+             double tempcor = 0;
+            // try
+            // {
+
+
+                 selected1 = list.SelectedName.symbol;
+                 selected2 = list2.SelectedName.symbol;
+                /* Task < List < double >> T_one = Task.Factory.StartNew(() => {
+                         m_count++;
+                         List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                         return jsf;
+                     });*/
+            Task T_one_ex = T_one.ContinueWith((antecedent) =>
             {
+                tester.Price = T_one.Result.Average().ToString("0.##");
+                m_count--;
+                if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
 
 
-                selected1 = list.SelectedName.symbol;
-                selected2 = list2.SelectedName.symbol;
-                Task < List < double >> T_one = Task.Factory.StartNew(() => {
-                        m_count++;
-                        List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                        return jsf;
-                    });
-                Task T_one_ex = T_one.ContinueWith((antecedent) => {
-                    tester.Price = T_one.Result.Average().ToString("0.##");
-                    m_count--;
-                    if(m_count <= 0) { load.Visibility = Visibility.Collapsed; }
-                },TaskScheduler.FromCurrentSynchronizationContext());
+            Task<List<double>> T_second = Task.Factory.StartNew(() =>
+           {
+               m_count++;
+               List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+               return jsf2;
+
+           });
+            Task T_second_ex = T_second.ContinueWith((antecedent) =>
+            {
+                tester2.Price = T_second.Result.Average().ToString("0.##");
+                m_count--;
+                if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
 
 
-                Task <List<double>> T_second = Task.Factory.StartNew(() =>
-                {
-                    m_count++;
-                    List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                    return jsf2;
+            Task T5 = new Task(() =>
+            {
+                m_count++;
+                List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                tempcor = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
 
-                });
-                Task T_second_ex = T_second.ContinueWith((antecedent) => {
-                    tester2.Price = T_second.Result.Average().ToString("0.##");
-                    m_count--;
-                    if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
-                }, TaskScheduler.FromCurrentSynchronizationContext());
-
-
-                Task T5 =  new Task(() => {
-                    m_count++;
-                    List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                    List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                    tempcor = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
-
-                });
-                Task T5_ex = T5.ContinueWith((antecedent) =>
-                {
-                    corre.RVal = tempcor;
-                    m_count--;
-                    if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
-                    }, TaskScheduler.FromCurrentSynchronizationContext());
-                T5.Start();
+            });
+            Task T5_ex = T5.ContinueWith((antecedent) =>
+            {
+                corre.RVal = tempcor;
+                m_count--;
+                if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
+            }, TaskScheduler.FromCurrentSynchronizationContext());
+            T5.Start();
 
 
-                //string selected1 = list.SelectedName.symbol;
-                //  string selected2 = list2.SelectedName.symbol;
-                // List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                // List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+            //string selected1 = list.SelectedName.symbol;
+            //  string selected2 = list2.SelectedName.symbol;
+            // List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+            // List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
 
-                // double average = jsf.Average();
-                //tester.Price = average.ToString("0.##");
+            // double average = jsf.Average();
+            //tester.Price = average.ToString("0.##");
 
-                //double average2 = jsf2.Average();
+            //double average2 = jsf2.Average();
 
-                //tester2.Price = average2.ToString("0.##");
+            //tester2.Price = average2.ToString("0.##");
 
-                //corre.RVal = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
-            }
-            catch (NullReferenceException) { MessageBox.Show("Please enter a stock symbol into both entries"); }
+            //corre.RVal = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
         }
         private void cal_Test_Click_1(object sender, RoutedEventArgs e)
         {
@@ -180,156 +188,183 @@ namespace Stock_Correlation
         {
             Properties.Settings.Default.Save();
         }
-    }
-    public class popupDim : INotifyPropertyChanged
-    {
-        private int height;
-        public int Height
-        {
-            get { return height; }
-            set
-            {
-                height = value;
-                OnPropertyChanged();
-            }
-        }
-        private int width;
-        public int Width
-        {
-            get { return width; }
-            set
-            {
-                width = value;
-                OnPropertyChanged();
-            }
-        }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string caller = "")
+        private void sto1_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (PropertyChanged != null)
+            if (prestringone != list.SelectedName.symbol)
             {
+                prestringone = list.SelectedName.symbol;
+                sqlRetrieve getter = new sqlRetrieve();
+                string selected1 = "";
+                m_count = 0;
+                selected1 = list.SelectedName.symbol;
+                T_one = Task.Factory.StartNew(() =>
                 {
-                    PropertyChanged(this, new PropertyChangedEventArgs(caller));
-                };
-            }
-        }
-    }
-    public class ViewModel { 
-        public ObservableCollection<stockname> Names { get; set; }
-        public stockname SelectedName { get; set; }
-        public ViewModel(List<stockname> ha)
-        {
-            Names = new ObservableCollection<stockname>(ha);
-        }
-        public ViewModel()
-        {
-            Names = new ObservableCollection<stockname>();
-        }
-        public AutoCompleteFilterPredicate<object> PersonFilter
-        {
-            get
-            {
-                return (searchText, obj) =>
-                    (obj as stockname).symbol.ToLower().Contains(searchText.ToLower())
-                    || (obj as stockname).name.ToLower().Contains(searchText.ToLower());
-            }
-        }
-    }
-    public class searchBarinfo
-    {
-        public ObservableCollection<string> list { get; private set; }
-        public ObservableCollection<string> list2 { get; private set; }
-
-        public searchBarinfo(Dictionary<string, string> ha)
-        {
-            list = new ObservableCollection<string>(ha.Keys.ToList());
-            list2 = new ObservableCollection<string>(ha.Values.ToList());
-        }
-        public searchBarinfo()
-        {
-            list = new ObservableCollection<string>();
-            list2 = new ObservableCollection<string>();
-        }
-    }
-    public class caldate : INotifyPropertyChanged
-    {
-        private DateTime selDate;
-        public DateTime SelDate
-        {
-            get { return selDate; }
-            set
-            {
-                selDate = value;
-                OnPropertyChanged();
+                    m_count++;
+                    List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                    return jsf;
+                });
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public caldate()
+        public class popupDim : INotifyPropertyChanged
         {
-            selDate = DateTime.Now;
-        }
-        private void OnPropertyChanged([CallerMemberName] string caller = "")
-        {
-            if (PropertyChanged != null)
+            private int height;
+            public int Height
             {
+                get { return height; }
+                set
                 {
-                    PropertyChanged(this, new PropertyChangedEventArgs(caller));
-                };
+                    height = value;
+                    OnPropertyChanged();
+                }
+            }
+            private int width;
+            public int Width
+            {
+                get { return width; }
+                set
+                {
+                    width = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void OnPropertyChanged([CallerMemberName] string caller = "")
+            {
+                if (PropertyChanged != null)
+                {
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs(caller));
+                    };
+                }
+            }
+        }
+        public class ViewModel
+        {
+            public ObservableCollection<stockname> Names { get; set; }
+            public stockname SelectedName { get; set; }
+            public ViewModel(List<stockname> ha)
+            {
+                Names = new ObservableCollection<stockname>(ha);
+            }
+            public ViewModel()
+            {
+                Names = new ObservableCollection<stockname>();
+            }
+            public AutoCompleteFilterPredicate<object> PersonFilter
+            {
+                get
+                {
+                    return (searchText, obj) =>
+                        (obj as stockname).symbol.ToLower().Contains(searchText.ToLower())
+                        || (obj as stockname).name.ToLower().Contains(searchText.ToLower());
+                }
+            }
+        }
+        public class searchBarinfo
+        {
+            public ObservableCollection<string> list { get; private set; }
+            public ObservableCollection<string> list2 { get; private set; }
+
+            public searchBarinfo(Dictionary<string, string> ha)
+            {
+                list = new ObservableCollection<string>(ha.Keys.ToList());
+                list2 = new ObservableCollection<string>(ha.Values.ToList());
+            }
+            public searchBarinfo()
+            {
+                list = new ObservableCollection<string>();
+                list2 = new ObservableCollection<string>();
+            }
+        }
+        public class caldate : INotifyPropertyChanged
+        {
+            private DateTime selDate;
+            public DateTime SelDate
+            {
+                get { return selDate; }
+                set
+                {
+                    selDate = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            public caldate()
+            {
+                selDate = DateTime.Now;
+            }
+            private void OnPropertyChanged([CallerMemberName] string caller = "")
+            {
+                if (PropertyChanged != null)
+                {
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs(caller));
+                    };
+                }
+            }
+        }
+        public class corrDisp : INotifyPropertyChanged
+        {
+            private double rVal;
+            public double RVal
+            {
+                get { return rVal; }
+                set
+                {
+                    rVal = value;
+                    OnPropertyChanged();
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void OnPropertyChanged([CallerMemberName] string caller = "")
+            {
+                if (PropertyChanged != null)
+                {
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs(caller));
+                    };
+                }
+            }
+        }
+        public class stockDisp : INotifyPropertyChanged
+        {
+            private string symbol;
+            public string Symbol
+            {
+                get { return symbol; }
+                set
+                {
+                    symbol = value;
+                    OnPropertyChanged();
+                }
+            }
+            private string price;
+            public string Price
+            {
+                get { return price; }
+                set
+                {
+                    price = value;
+                    OnPropertyChanged();
+                }
+            }
+
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            private void OnPropertyChanged([CallerMemberName] string caller = "")
+            {
+                if (PropertyChanged != null)
+                {
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs(caller));
+                    };
+                }
             }
         }
     }
-    public class corrDisp : INotifyPropertyChanged
-    {
-        private double rVal;
-        public double RVal
-        {
-            get { return rVal; }
-            set
-            {
-                rVal = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string caller = "")
-        {
-            if (PropertyChanged != null)
-            {
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(caller));
-                };
-            }
-        }
-    }
-    public class stockDisp : INotifyPropertyChanged
-    {
-        private string symbol;
-        public string Symbol { get { return symbol;}
-            set { symbol = value;
-                OnPropertyChanged();
-            }
-        }
-        private string price;
-        public string Price
-        {
-            get { return price; }
-            set { price = value;
-                OnPropertyChanged();
-            }
-        }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string caller = "")
-        {
-            if (PropertyChanged != null)
-            {
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(caller));
-            };
-            }
-        }
-    } }
+}
