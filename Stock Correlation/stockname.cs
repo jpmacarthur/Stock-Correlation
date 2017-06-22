@@ -19,5 +19,10 @@ namespace Stock_Correlation
             symbol = sym;
             name = nam;
         }
+        public stockname(string sym)
+        {
+            symbol = sym;
+        }
+
     }
 }

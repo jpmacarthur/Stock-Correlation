@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Configuration;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Calculator
 {
@@ -46,11 +47,7 @@ namespace Calculator
                 
 
             }
-            catch (MySqlException ex)
-            {
-                Console.WriteLine("Error: {0}", ex.ToString());
-
-            }
+            catch(MySqlException ex) { throw ex; }
             finally
             {
                 if (conn != null)

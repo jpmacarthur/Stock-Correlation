@@ -31,7 +31,7 @@
         </DockPanel>
         <StackPanel Orientation="Horizontal" Margin="10,31,10.667,225.667">
             <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
-            <toolkit:AutoCompleteBox Name="sto1" ItemFilter="{Binding PersonFilter}" MinimumPrefixLength="2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="16" FilterMode="Contains" Width="117" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,17" Panel.ZIndex="3" Height="30" LostFocus="sto1_LostFocus">
+            <toolkit:AutoCompleteBox Name="sto1" ItemFilter="{Binding PersonFilter}" MinimumPrefixLength="2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="16" FilterMode="Contains" Width="117" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,17" Panel.ZIndex="3" Height="30" LostFocus="sto1_LostFocus" SelectionChanged="sto1_SelectionChanged">
                 <toolkit:AutoCompleteBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -46,7 +46,7 @@
             <TextBlock Text="Price: " VerticalAlignment="Center" Margin="5,0,0,0"></TextBlock>
             <TextBlock Name ="typedPrice" Text="{Binding Price}" VerticalAlignment="Center" Margin="0,17,10,17" Width="37" Height="30"></TextBlock>
             <TextBlock Text="Symbol: " VerticalAlignment="Center"></TextBlock>
-            <toolkit:AutoCompleteBox Name="sto2" MinimumPrefixLength="2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="16" FilterMode="Contains" Width="118" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,17" Height="30">
+            <toolkit:AutoCompleteBox Name="sto2" MinimumPrefixLength="2" ValueMemberPath="symbol" VerticalAlignment="Center" FontSize="16" FilterMode="Contains" Width="118" ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName, Mode=TwoWay}" Margin="0,17" Height="30" SelectionChanged="sto2_SelectionChanged">
                 <toolkit:AutoCompleteBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">

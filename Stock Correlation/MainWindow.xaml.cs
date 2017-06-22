@@ -16,6 +16,8 @@ using System.Runtime.CompilerServices;
 using System.Collections.ObjectModel;
 using Calculator;
 using System.Threading.Tasks;
+using MySql.Data;
+using MySql.Data.MySqlClient;
 
 namespace Stock_Correlation
 {
@@ -37,20 +39,36 @@ namespace Stock_Correlation
         ViewModel list2 = new ViewModel();
         caldate wpfCAL = new caldate();
         popupDim pud = new popupDim();
-        string prestringone = "";
+        HashSet<string> hashednames = new HashSet<string>();
         int m_count = 0;
+        double tempcor = 0;
+        bool mysqlError = false;
         Task<List<double>> T_one = new Task<List<double>>(() =>
         {
             List<double> temp = new List<double>();
             return temp;
         });
+        Task<List<double>> T_second = new Task<List<double>>(() =>
+        {
+            List<double> temp = new List<double>();
+            return temp;
+        });
+        Task<double> T5 = new Task<double>(()=> {
+            double temp = 0;
+            return temp;
+        });
         public MainWindow()
         {
             InitializeComponent();
+            sqlRetrieve getter = new sqlRetrieve();
             List<string> csv = parCSV.getSymbols();
             List<stockname> l1 = new List<stockname>();
             List<stockname> l2 = new List<stockname>();
             Dictionary<string, string> names = parCSV.getSymbolName();
+            foreach (string str in csv)
+            {
+                hashednames.Add(str);
+            }
             foreach (KeyValuePair<string, string> pair in names)
             {
                 if (pair.Value.Contains(@"&#39;"))
@@ -75,83 +93,55 @@ namespace Stock_Correlation
             typedPrice2.DataContext = tester2;
             cale.DataContext = wpfCAL;
             pU2.DataContext = pud;
-
             Collector d = new Collector();
             Dictionary<string, string> test = new Dictionary<string, string>();
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            // load.Visibility = Visibility.Visible;
-             sqlRetrieve getter = new sqlRetrieve();
-             string selected1 = "";
-             string selected2 = "";
-             int m_count = 0;
-             double tempcor = 0;
-            // try
-            // {
+            load.Visibility = Visibility.Visible;
+            sqlRetrieve getter = new sqlRetrieve();
 
-
-                 selected1 = list.SelectedName.symbol;
-                 selected2 = list2.SelectedName.symbol;
-                /* Task < List < double >> T_one = Task.Factory.StartNew(() => {
-                         m_count++;
-                         List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                         return jsf;
-                     });*/
             Task T_one_ex = T_one.ContinueWith((antecedent) =>
-            {
-                tester.Price = T_one.Result.Average().ToString("0.##");
-                m_count--;
-                if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
-            }, TaskScheduler.FromCurrentSynchronizationContext());
+                {
+                    if (mysqlError == true)
+                    {
+                        MessageBox.Show("Check your database settings, I was unable to connect");
+                        load.Visibility = Visibility.Collapsed;
+                        }
+                    else {
+                        try
+                        {
+                            tester.Price = T_one.Result.Average().ToString("0.##");
+                        }
+                        catch (InvalidOperationException s) { MessageBox.Show(String.Format("Error {0}", s.Message)); }
+                    }
 
 
-            Task<List<double>> T_second = Task.Factory.StartNew(() =>
-           {
-               m_count++;
-               List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-               return jsf2;
-
-           });
+                    m_count--;
+                    if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
+                }, TaskScheduler.FromCurrentSynchronizationContext());
             Task T_second_ex = T_second.ContinueWith((antecedent) =>
             {
-                tester2.Price = T_second.Result.Average().ToString("0.##");
-                m_count--;
-                if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
+                if (mysqlError == false)
+                {
+                    try
+                    {
+                        tester2.Price = T_second.Result.Average().ToString("0.##");
+                    }
+                    catch (InvalidOperationException s) { MessageBox.Show(String.Format("Error {0}", s.Message)); }
+
+                    m_count--;
+                    if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
+                }
             }, TaskScheduler.FromCurrentSynchronizationContext());
-
-
-            Task T5 = new Task(() =>
-            {
-                m_count++;
-                List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                tempcor = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
-
-            });
             Task T5_ex = T5.ContinueWith((antecedent) =>
             {
-                corre.RVal = tempcor;
+                corre.RVal = antecedent.Result;
                 m_count--;
-                if (m_count <= 0) { load.Visibility = Visibility.Collapsed; }
+                if(m_count <= 0) load.Visibility = Visibility.Collapsed;
             }, TaskScheduler.FromCurrentSynchronizationContext());
-            T5.Start();
 
-
-            //string selected1 = list.SelectedName.symbol;
-            //  string selected2 = list2.SelectedName.symbol;
-            // List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-            // List<double> jsf2 = getter.retrievePrice(selected2, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-
-            // double average = jsf.Average();
-            //tester.Price = average.ToString("0.##");
-
-            //double average2 = jsf2.Average();
-
-            //tester2.Price = average2.ToString("0.##");
-
-            //corre.RVal = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
         }
         private void cal_Test_Click_1(object sender, RoutedEventArgs e)
         {
@@ -182,6 +172,7 @@ namespace Stock_Correlation
             pud.Height = (int)totG.ActualHeight;
             pud.Width = (int)totG.ActualWidth;
             pU2.Visibility = Visibility.Visible;
+            mysqlError = false;
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -191,23 +182,79 @@ namespace Stock_Correlation
 
         private void sto1_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (prestringone != list.SelectedName.symbol)
+            if(list.SelectedName == null && hashednames.Contains(sto1.Text.ToUpper()))
             {
-                prestringone = list.SelectedName.symbol;
-                sqlRetrieve getter = new sqlRetrieve();
-                string selected1 = "";
-                m_count = 0;
-                selected1 = list.SelectedName.symbol;
-                T_one = Task.Factory.StartNew(() =>
-                {
-                    m_count++;
-                    List<double> jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
-                    return jsf;
-                });
+                var temp = list.Names.FirstOrDefault(o => o.symbol == sto1.Text.ToUpper());
+                stockname tempitem = new stockname(temp.symbol, temp.name);
+                list.SelectedName = tempitem;
             }
+
+
+            }
+
+        private void sto1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            sqlRetrieve getter = new sqlRetrieve();
+            if (list2.SelectedName!= null) { T5 = Task.Factory.StartNew(() =>
+            {
+
+                {
+                    List<double> jsf = new List<double>();
+                    List<double> jsf2 = new List<double>();
+                    m_count++;
+                    try
+                    {
+                        jsf = getter.retrievePrice(list.SelectedName.symbol, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                        jsf2 = getter.retrievePrice(list2.SelectedName.symbol, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                    }
+                    catch (MySqlException ex) { mysqlError = true; }
+                    if (mysqlError == false) tempcor = Math.Round(calc.ComputeCoeff(jsf, jsf2), 3);
+                    return tempcor;
+                }
+            });
+            }
+
+            string selected1 = "";
+            try { selected1 = list.SelectedName.symbol; }
+            catch (NullReferenceException ed) { }
+            T_one = Task.Factory.StartNew(() =>
+            {
+                m_count++;
+                List<double> jsf = new List<double>();
+                try
+                {
+                    jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                }
+                catch (MySqlException ex) { mysqlError = true; }
+                return jsf;
+            });
         }
 
-        public class popupDim : INotifyPropertyChanged
+        private void sto2_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(list.SelectedName != null) { T5.Start(); }
+            sqlRetrieve getter = new sqlRetrieve();
+            string selected1 = list2.SelectedName.symbol;
+
+            try
+            {
+                T_second = Task.Factory.StartNew(() =>
+            {
+            List<double> jsf = new List<double>();
+                m_count++;
+                try
+                {
+                    jsf = getter.retrievePrice(selected1, Properties.Settings.Default.server, Properties.Settings.Default.database, Properties.Settings.Default.password, Properties.Settings.Default.username);
+                }
+                catch (MySqlException) { mysqlError = true; }
+                return jsf;
+            });
+            }
+            catch(AggregateException ae) { if (ae.InnerException is MySqlException) { mysqlError = true; } }
+        }
+    }
+
+    public class popupDim : INotifyPropertyChanged
         {
             private int height;
             public int Height
@@ -367,4 +414,4 @@ namespace Stock_Correlation
             }
         }
     }
-}
+
